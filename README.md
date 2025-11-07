@@ -4,12 +4,12 @@ Hydra is a blazingly fast C++ proxy server designed to receive HTTP requests and
 
 ## Features
 
-- ⚡ **Ultra-High Performance**: Optimized for speed with async I/O and zero-delay forwarding
-- 🔀 **Simultaneous Broadcasting**: Forwards requests to all configured servers at the exact same time
-- 🎯 **Zero Processing Overhead**: Minimal processing between receiving and forwarding
-- 🔧 **Easy Configuration**: Simple JSON configuration for ports and targets
-- 🧵 **Multi-threaded**: Uses all available CPU cores for maximum throughput
-- 🚀 **TCP_NODELAY**: Nagle's algorithm disabled for lowest possible latency
+- **Ultra-High Performance**: Optimized for speed with async I/O and zero-delay forwarding
+- **Simultaneous Broadcasting**: Forwards requests to all configured servers at the exact same time
+- **Zero Processing Overhead**: Minimal processing between receiving and forwarding
+- **Easy Configuration**: Simple JSON configuration for ports and targets
+- **Multi-threaded**: Uses all available CPU cores for maximum throughput
+- **TCP_NODELAY**: Nagle's algorithm disabled for lowest possible latency
 
 ## Performance Optimizations
 
