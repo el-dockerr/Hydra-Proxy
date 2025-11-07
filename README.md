@@ -13,7 +13,7 @@ Hydra is a blazingly fast C++ proxy server designed to receive HTTP requests and
 
 ## Quick Start - Download Pre-built Binaries
 
-**Don't want to build from source?** Download the latest pre-built binary for your platform from the [Releases page](https://github.com/YOUR_USERNAME/hydra/releases/latest).
+**Don't want to build from source?** Download the latest pre-built binary for your platform from the [Releases page](https://github.com/el-dockerr/hydra/releases/latest).
 
 ### Installation
 
