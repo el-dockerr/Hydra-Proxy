@@ -53,7 +53,8 @@ jobs:
         cd build
         cmake .. -DCMAKE_BUILD_TYPE=Release
         cmake --build . --config Release
-        copy Release\hydra.exe hydra.exe
+        copy Release\hydra.exe .\hydra.exe
+        dir
 
     - name: Build with CMake (Linux/macOS)
       if: runner.os != 'Windows'
@@ -62,6 +63,7 @@ jobs:
         cd build
         cmake .. -DCMAKE_BUILD_TYPE=Release
         make -j$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)
+        ls -lah
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
@@ -84,14 +86,36 @@ jobs:
       with:
         path: artifacts
 
+    - name: Debug - List artifact structure
+      run: |
+        echo "=== Artifacts directory structure ==="
+        ls -R artifacts/
+
     - name: Prepare release assets
       run: |
         mkdir -p release_assets
-        cp artifacts/hydra-windows-x64/hydra.exe release_assets/hydra-windows-x64.exe
-        cp artifacts/hydra-linux-x64/hydra release_assets/hydra-linux-x64
-        cp artifacts/hydra-macos-x64/hydra release_assets/hydra-macos-x64
-        chmod +x release_assets/hydra-linux-x64
-        chmod +x release_assets/hydra-macos-x64
+        # The artifact folders contain the files without the .exe extension for Windows
+        if [ -f "artifacts/hydra-windows-x64.exe/hydra.exe" ]; then
+          cp artifacts/hydra-windows-x64.exe/hydra.exe release_assets/hydra-windows-x64.exe
+        else
+          echo "Warning: Windows artifact not found"
+        fi
+        
+        if [ -f "artifacts/hydra-linux-x64/hydra" ]; then
+          cp artifacts/hydra-linux-x64/hydra release_assets/hydra-linux-x64
+          chmod +x release_assets/hydra-linux-x64
+        else
+          echo "Warning: Linux artifact not found"
+        fi
+        
+        if [ -f "artifacts/hydra-macos-x64/hydra" ]; then
+          cp artifacts/hydra-macos-x64/hydra release_assets/hydra-macos-x64
+          chmod +x release_assets/hydra-macos-x64
+        else
+          echo "Warning: macOS artifact not found"
+        fi
+        
+        echo "=== Release assets ==="
         ls -lah release_assets/
 
     - name: Upload Release Assets
