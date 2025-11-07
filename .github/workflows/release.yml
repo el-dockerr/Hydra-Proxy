@@ -1,0 +1,115 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on version tags like v1.0.0, v2.1.3, etc.
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            artifact_name: hydra.exe
+            asset_name: hydra-windows-x64.exe
+          - os: ubuntu-latest
+            artifact_name: hydra
+            asset_name: hydra-linux-x64
+          - os: macos-latest
+            artifact_name: hydra
+            asset_name: hydra-macos-x64
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up build environment (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
+        refreshenv
+
+    - name: Set up build environment (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake
+
+    - name: Set up build environment (macOS)
+      if: runner.os == 'macOS'
+      run: |
+        brew install cmake
+
+    - name: Build with CMake (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_BUILD_TYPE=Release
+        cmake --build . --config Release
+        copy Release\hydra.exe hydra.exe
+
+    - name: Build with CMake (Linux/macOS)
+      if: runner.os != 'Windows'
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_BUILD_TYPE=Release
+        make -j$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.asset_name }}
+        path: build/${{ matrix.artifact_name }}
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          artifacts/hydra-windows-x64/hydra.exe
+          artifacts/hydra-linux-x64/hydra
+          artifacts/hydra-macos-x64/hydra
+        body: |
+          ## Hydra High-Speed Proxy ${{ github.ref_name }}
+          
+          ### Download Pre-built Binaries
+          
+          - **Windows (x64)**: `hydra.exe`
+          - **Linux (x64)**: `hydra`
+          - **macOS (x64)**: `hydra`
+          
+          ### Installation
+          
+          1. Download the binary for your platform
+          2. Make it executable (Linux/macOS): `chmod +x hydra`
+          3. Create a `config.json` file (see [README](https://github.com/${{ github.repository }}/blob/main/README.md#configuration))
+          4. Run: `./hydra` (or `hydra.exe` on Windows)
+          
+          ### What's Changed
+          
+          Full Changelog: https://github.com/${{ github.repository }}/compare/${{ github.ref_name }}
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

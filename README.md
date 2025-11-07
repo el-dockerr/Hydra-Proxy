@@ -11,6 +11,49 @@ Hydra is a blazingly fast C++ proxy server designed to receive HTTP requests and
 - **Multi-threaded**: Uses all available CPU cores for maximum throughput
 - **TCP_NODELAY**: Nagle's algorithm disabled for lowest possible latency
 
+## Quick Start - Download Pre-built Binaries
+
+**Don't want to build from source?** Download the latest pre-built binary for your platform from the [Releases page](https://github.com/YOUR_USERNAME/hydra/releases/latest).
+
+### Installation
+
+1. Download the binary for your platform:
+   - **Windows**: `hydra-windows-x64.exe`
+   - **Linux**: `hydra-linux-x64`
+   - **macOS**: `hydra-macos-x64`
+
+2. Make it executable (Linux/macOS only):
+   ```bash
+   chmod +x hydra-linux-x64
+   # or
+   chmod +x hydra-macos-x64
+   ```
+
+3. Create a `config.json` file (see [Configuration](#configuration) section below)
+
+4. Run Hydra:
+   ```bash
+   # Windows
+   hydra-windows-x64.exe
+   
+   # Linux
+   ./hydra-linux-x64
+   
+   # macOS
+   ./hydra-macos-x64
+   ```
+
+
+   ### Using Bodge
+```bash
+bodge --platform=XXX
+```
+
+Suported Platforms:
+* windows_x64
+* linux_x64
+* apple_x64
+
 ## Performance Optimizations
 
 - Native socket APIs (Winsock2 on Windows, POSIX sockets on Linux/Mac)
@@ -206,6 +249,27 @@ Server1 Server2 Server3 ... ServerN
 - Ensure Release build (not Debug)
 - Check network latency to target servers
 - Verify compiler optimizations are enabled
+
+## Creating Releases (For Maintainers)
+
+Hydra uses GitHub Actions to automatically build binaries for all platforms. To create a new release:
+
+1. **Update version** in your code/documentation if needed
+
+2. **Create and push a version tag**:
+   ```bash
+   git tag v1.0.0
+   git push origin v1.0.0
+   ```
+
+3. **Automated build**: GitHub Actions will automatically:
+   - Build binaries for Windows, Linux, and macOS
+   - Create a GitHub Release with the tag
+   - Upload all binaries to the release
+
+4. **Edit release notes** (optional): Go to the [Releases page](https://github.com/YOUR_USERNAME/hydra/releases) and edit the automatically created release to add more details about changes.
+
+The release workflow is defined in `.github/workflows/release.yml`.
 
 ## License
 
