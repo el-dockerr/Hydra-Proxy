@@ -3,6 +3,7 @@
 #include <thread>
 #include <chrono>
 #include <cstring>
+#include <string>
 
 namespace hydra {
 
@@ -81,6 +82,69 @@ void ProxySession::handle_client() {
         if (bytes_read > 0) {
             // Broadcast the data to all targets
             broadcast_to_targets(buffer_, bytes_read);
+            
+            // Extract the body from the request (everything after \r\n\r\n)
+            const char* body_start = nullptr;
+            size_t body_length = 0;
+            
+            // Look for the end of HTTP headers
+            for (size_t i = 0; i < static_cast<size_t>(bytes_read) - 3; i++) {
+                if (buffer_[i] == '\r' && buffer_[i+1] == '\n' && 
+                    buffer_[i+2] == '\r' && buffer_[i+3] == '\n') {
+                    body_start = buffer_.data() + i + 4;
+                    body_length = bytes_read - (i + 4);
+                    break;
+                }
+            }
+            
+            // Build HTTP response with the body
+            std::string http_response = 
+                "HTTP/1.1 200 OK\r\n"
+                "Content-Length: " + std::to_string(body_length) + "\r\n"
+                "Connection: keep-alive\r\n"
+                "\r\n";
+            
+            // Send HTTP headers
+            size_t total_sent = 0;
+            size_t response_len = http_response.length();
+            
+            while (total_sent < response_len) {
+#ifdef _WIN32
+                int sent = send(socket_, http_response.c_str() + total_sent, (int)(response_len - total_sent), 0);
+#else
+                ssize_t sent = send(socket_, http_response.c_str() + total_sent, response_len - total_sent, 0);
+#endif
+                if (sent == SOCKET_ERROR) {
+#ifdef _WIN32
+                    std::cerr << "Failed to send HTTP response headers to client: " << WSAGetLastError() << std::endl;
+#else
+                    std::cerr << "Failed to send HTTP response headers to client: " << strerror(errno) << std::endl;
+#endif
+                    break;
+                }
+                total_sent += sent;
+            }
+            
+            // Send the body if there is one
+            if (body_length > 0 && body_start != nullptr) {
+                total_sent = 0;
+                while (total_sent < body_length) {
+#ifdef _WIN32
+                    int sent = send(socket_, body_start + total_sent, (int)(body_length - total_sent), 0);
+#else
+                    ssize_t sent = send(socket_, body_start + total_sent, body_length - total_sent, 0);
+#endif
+                    if (sent == SOCKET_ERROR) {
+#ifdef _WIN32
+                        std::cerr << "Failed to send HTTP response body to client: " << WSAGetLastError() << std::endl;
+#else
+                        std::cerr << "Failed to send HTTP response body to client: " << strerror(errno) << std::endl;
+#endif
+                        break;
+                    }
+                    total_sent += sent;
+                }
+            }
         } else if (bytes_read == 0) {
             // Connection closed
             break;

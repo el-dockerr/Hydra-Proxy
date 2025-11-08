@@ -7,10 +7,11 @@ platforms: windows_x64, linux_x64, apple_x64
 
 # Global C++ Compiler and Flags
 compiler: g++
-cxx_flags: -std=c++17 -Wall -Wextra -Wpedantic -O2
+cxx_flags: -std=c++17 -Wall -Wextra -Wpedantic -O2 
 
 # Platform-specific settings
 # Note: Libraries must be linked - add at end of compile command
-@windows_x64.cxx_flags: -static-libgcc -static-libstdc++ -lws2_32 -lpthread
-@linux_x64.cxx_flags: -lpthread
-@apple_x64.cxx_flags: -lpthread
+@windows_x64.cxx_flags: -static-libgcc -static-libstdc++ 
+@windows_x64.link_flags: -lws2_32 -lpthread
+@linux_x64.link_flags: -lpthread
+@apple_x64.link_flags: -lpthread
