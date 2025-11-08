@@ -17,9 +17,23 @@ void signal_handler(int signal) {
 
 int main(int argc, char* argv[]) {
     try {
-        std::cout << "==================================" << std::endl;
-        std::cout << "     HYDRA High-Speed Proxy      " << std::endl;
-        std::cout << "==================================" << std::endl;
+        std::cout << "888                  888           " << std::endl;     
+        std::cout << "888                  888                " << std::endl;
+        std::cout << "888                  888                " << std::endl;
+        std::cout << "88888b. 888  888 .d88888888d888 8888b.  " << std::endl;
+        std::cout << "888 \"88b888  888d88\" 888888P\"      \"88b " << std::endl;
+        std::cout << "888  888888  888888  888888    .d888888 " << std::endl;
+        std::cout << "888  888Y88b 888Y88b 888888    888  888 " << std::endl;
+        std::cout << "888  888 \"Y88888 \"Y88888888    \"Y888888 " << std::endl;
+        std::cout << "             888                        " << std::endl;
+        std::cout << "        Y8b d88P                        " << std::endl;
+        std::cout << "         \"Y88P\"                        " << std::endl;
+        std::cout << "================================================" << std::endl;
+        std::cout << "              Version 0.0.3           " << std::endl;
+        std::cout << "================================================" << std::endl;
+        std::cout << "      https://github.com/el-dockerr   " << std::endl;
+        std::cout << "      written by Swen 'El Dockerr' Kalski" << std::endl;
+        std::cout << "================================================" << std::endl;
         std::cout << std::endl;
         
         // Load configuration

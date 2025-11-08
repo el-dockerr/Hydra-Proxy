@@ -11,6 +11,10 @@ Hydra is a blazingly fast C++ proxy server designed to receive HTTP requests and
 - **Multi-threaded**: Uses all available CPU cores for maximum throughput
 - **TCP_NODELAY**: Nagle's algorithm disabled for lowest possible latency
 
+## Screenshot
+
+![CLI Demo](./assets/Screenshot.png)
+
 ## Quick Start - Download Pre-built Binaries
 
 **Don't want to build from source?** Download the latest pre-built binary for your platform from the [Releases page](https://github.com/el-dockerr/hydra/releases/latest).
